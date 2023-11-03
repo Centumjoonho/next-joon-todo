@@ -76,7 +76,7 @@ export async function addTodos({ title }) {
 
 
 //단일 할일 조회
-export async function fetchTodo(id) {
+export async function fetchATodo(id) {
 
 
     const docRef = doc(db, "cities", "SF");
