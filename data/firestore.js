@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 
-import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, Timestamp, getDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, Timestamp, getDoc, deleteDoc } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -78,23 +78,76 @@ export async function addTodos({ title }) {
 //단일 할일 조회
 export async function fetchATodo(id) {
 
+    if (id === null) {
+        return null;
+    }
 
-    const docRef = doc(db, "cities", "SF");
-    const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
+    const todoDocRef = doc(db, "centum-todos", id);
+
+    const todoDocSnap = await getDoc(todoDocRef);
+
+    if (todoDocSnap.exists()) {
+        console.log("Document data:", todoDocSnap.data());
+        // 값이 있으면 todo json 전송
+
+        const aTodo = {
+            id: todoDocSnap.id,
+            title: todoDocSnap.data()["title"],
+            is_done: todoDocSnap.data()["is_done"],
+            created_at: todoDocSnap.data()["created_at"].toDate(),
+        }
+        return aTodo;
+
     } else {
         // docSnap.data() will be undefined in this case
         console.log("No such document!");
+        return null;
     }
 
 }
 
 
+//단일 할일 삭제
+export async function deleteATodo(id) {
+
+    const checkDeleteATodo = await fetchATodo(id);
+
+    if (checkDeleteATodo === null) {
+        return null;
+    }
+
+    await deleteDoc(doc(db, "centum-todos", id));
+
+    return checkDeleteATodo;
+
+}
+
+//단일 할일 수정
+export async function editATodo(id, { title, is_done }) {
+
+    const checkEditATodo = await fetchATodo(id);
+
+    if (checkEditATodo === null) {
+        return null;
+    }
+
+    const todoRef = doc(db, "centum-todos", id);
+
+    // Set the "capital" field of the city 'DC'
+    await updateDoc(todoRef, {
+        title: title,
+        is_done: is_done,
+    });
+
+    return { id: id, title: title, is_done: is_done };
 
 
-module.exports = { fetchTodos, addTodos }
+}
+
+
+
+module.exports = { fetchTodos, addTodos, fetchATodo, deleteATodo, editATodo }
 
 
 

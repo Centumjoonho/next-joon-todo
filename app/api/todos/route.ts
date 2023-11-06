@@ -20,6 +20,13 @@ export async function POST(request: NextRequest) {
 
   const { title } = await request.json();
 
+  if (title === null) {
+    const errMessage = {
+      message: "title 값이 여부를 확인하세요",
+    };
+    return NextResponse.json(errMessage, { status: 422 });
+  }
+
   const addedTodo = await addTodos({ title });
 
   const response = {
