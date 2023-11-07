@@ -28,7 +28,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
-
+import CustomModal from "../components/custom-modal";
 import { VerticalDotsIcon } from "../components/icons";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
@@ -86,26 +86,10 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
         <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
           <ModalContent>
             {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  Modal Title
-                </ModalHeader>
-                <ModalBody>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Nullam pulvinar risus non risus hendrerit venenatis.
-                    Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                  </p>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Close
-                  </Button>
-                  <Button color="primary" onPress={onClose}>
-                    Action
-                  </Button>
-                </ModalFooter>
-              </>
+              <CustomModal
+                currentModalData={currentModalData}
+                onClose={onClose}
+              />
             )}
           </ModalContent>
         </Modal>
