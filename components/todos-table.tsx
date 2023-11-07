@@ -9,7 +9,7 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/table";
-import { Todo } from "@/types";
+import { Todo, FocusedTodoType, CustomModalType } from "@/types";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import {
@@ -41,6 +41,11 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
   const [newTodoInput, setNewTodoInput] = useState("");
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(false);
+  // 띄우는 모달 상태
+  const [currentModalData, setCurrentModalData] = useState<FocusedTodoType>({
+    focusedTodo: null,
+    modalType: "detail" as CustomModalType,
+  });
 
   const router = useRouter();
 
@@ -78,7 +83,7 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
     return (
       <div>
         <Button onPress={onOpen}>Open Modal</Button>
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
           <ModalContent>
             {(onClose) => (
               <>
@@ -107,6 +112,7 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
       </div>
     );
   };
+
   const DisabledTodoAddButton = () => {
     return (
       <>
@@ -140,10 +146,19 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
                 <VerticalDotsIcon className="text-default-400" />
               </Button>
             </DropdownTrigger>
-            <DropdownMenu>
-              <DropdownItem>상세보기</DropdownItem>
-              <DropdownItem>수정</DropdownItem>
-              <DropdownItem>삭제</DropdownItem>
+            <DropdownMenu
+              onAction={(key) => {
+                console.log(`A todo id :  ${aTodo.id} key :  ${key}`);
+                setCurrentModalData({
+                  focusedTodo: aTodo,
+                  modalType: key as CustomModalType,
+                });
+                onOpen();
+              }}
+            >
+              <DropdownItem key="detail">상세보기</DropdownItem>
+              <DropdownItem key="edit">수정</DropdownItem>
+              <DropdownItem key="delete">삭제</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
