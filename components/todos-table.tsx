@@ -23,9 +23,6 @@ import {
   DropdownItem,
   Modal,
   ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
 import CustomModal from "../components/custom-modal";
@@ -82,7 +79,6 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
   const ModalComponent = () => {
     return (
       <div>
-        <Button onPress={onOpen}>Open Modal</Button>
         <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
           <ModalContent>
             {(onClose) => (

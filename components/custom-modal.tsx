@@ -3,9 +3,14 @@
 import React, { useState } from "react";
 
 import { Todo, FocusedTodoType, CustomModalType } from "@/types";
-
-import { Button } from "@nextui-org/button";
-import { ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
+import { Input } from "@nextui-org/input";
+import {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Switch,
+} from "@nextui-org/react";
 
 const CustomModal = ({
   currentModalData,
@@ -14,6 +19,8 @@ const CustomModal = ({
   currentModalData: FocusedTodoType;
   onClose: () => void;
 }) => {
+  const [isDone, setIsDone] = useState<Boolean>(false);
+
   const DetailModal = () => {
     return (
       <>
@@ -40,21 +47,40 @@ const CustomModal = ({
   const EditModal = () => {
     return (
       <>
-        <ModalHeader className="flex flex-col gap-1">
-          {currentModalData.modalType}
-        </ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">할일 수정</ModalHeader>
         <ModalBody>
           <p>
-            수정모달
-            {/* {currentModalData.focusedTodo?.title} */}
+            <span className=" font-bold">
+              {currentModalData.focusedTodo?.id}
+            </span>
           </p>
+
+          <Input
+            autoFocus
+            isRequired
+            label="할일 내용"
+            placeholder="내용을 입력하세요"
+            variant="bordered"
+            defaultValue={currentModalData.focusedTodo?.title}
+          />
+          <div className="flex py-2 px-1 justify-between">
+            <Switch
+              defaultSelected={currentModalData.focusedTodo?.is_done}
+              size="lg"
+              color="warning"
+            ></Switch>
+            <p className="py-2">{`${
+              currentModalData.focusedTodo &&
+              new Date(currentModalData.focusedTodo.created_at).toLocaleString()
+            }`}</p>
+          </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" variant="light" onPress={onClose}>
+          <Button color="danger" variant="flat" onPress={onClose}>
             닫기
           </Button>
           <Button color="primary" onPress={onClose}>
-            액션
+            수정
           </Button>
         </ModalFooter>
       </>
