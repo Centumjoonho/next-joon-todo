@@ -19,7 +19,14 @@ const CustomModal = ({
   currentModalData: FocusedTodoType;
   onClose: () => void;
 }) => {
-  const [isDone, setIsDone] = useState<Boolean>(false);
+  //수정 로딩 상태
+  const [isDone, setIsDone] = useState<Boolean>(
+    currentModalData.focusedTodo?.is_done as boolean
+  );
+  //수정 할일 상태
+  const [editedTodoValue, setEditedTodoValue] = useState<string>(
+    `${currentModalData.focusedTodo?.title}`
+  );
 
   const DetailModal = () => {
     return (
@@ -52,6 +59,7 @@ const CustomModal = ({
           <p>
             <span className=" font-bold">
               {currentModalData.focusedTodo?.id}
+              {`   isDon : ${isDone}`}
             </span>
           </p>
 
@@ -61,11 +69,13 @@ const CustomModal = ({
             label="할일 내용"
             placeholder="내용을 입력하세요"
             variant="bordered"
-            defaultValue={currentModalData.focusedTodo?.title}
+            value={editedTodoValue}
+            onValueChange={setEditedTodoValue}
           />
           <div className="flex py-2 px-1 justify-between">
             <Switch
               defaultSelected={currentModalData.focusedTodo?.is_done}
+              onValueChange={setIsDone}
               size="lg"
               color="warning"
             ></Switch>
