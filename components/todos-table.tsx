@@ -58,7 +58,6 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
     // 버튼색 복원
     setTodoAddEnable(false);
     setIsLoading(true);
-    notify("일정이 추가 되었습니다.");
 
     await new Promise((f) => setTimeout(f, 1000));
     await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/todos`, {
@@ -71,11 +70,55 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
     setNewTodoInput("");
 
     router.refresh();
-    //console.log(`할일 추가 완료 : ${newTodoInput}`);
+
     // 로딩 스탑
     setIsLoading(false);
+    notify("일정이 추가 되었습니다.");
   };
 
+  // ID로 할 일 삭제 핸들러
+  const deleteATodoHandler = async (id: string) => {
+    // 버튼색 복원
+    // setTodoAddEnable(false);
+    setIsLoading(true);
+
+    await new Promise((f) => setTimeout(f, 1000));
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${id}`, {
+      method: "DELETE",
+      cache: "no-store",
+    });
+
+    router.refresh();
+    // 로딩 스탑
+    setIsLoading(false);
+    notify("일정이 삭제 되었습니다.");
+  };
+
+  // 입력 된 값 전송 핸들러
+  const editATodoHandler = async (
+    id: string,
+    editedTitle: string,
+    editedIsDone: boolean
+  ) => {
+    // 버튼색 복원
+    // setTodoAddEnable(false);
+    setIsLoading(true);
+
+    await new Promise((f) => setTimeout(f, 1000));
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${id}`, {
+      method: "POST",
+      body: JSON.stringify({
+        title: editedTitle,
+        is_done: editedIsDone,
+      }),
+      cache: "no-store",
+    });
+
+    router.refresh();
+    // 로딩 스탑
+    setIsLoading(false);
+    notify("일정이 수정 되었습니다.");
+  };
   const ModalComponent = () => {
     return (
       <div>
@@ -85,6 +128,14 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
               <CustomModal
                 currentModalData={currentModalData}
                 onClose={onClose}
+                onEdit={async (id, title, isDone) => {
+                  await editATodoHandler(id, title, isDone);
+                  onClose();
+                }}
+                onDelete={async (id) => {
+                  await deleteATodoHandler(id);
+                  onClose();
+                }}
               />
             )}
           </ModalContent>
@@ -112,12 +163,24 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
       </>
     );
   };
+  const checkIsDone = (isDone: boolean) =>
+    isDone ? "line-through text-red-500/50" : "";
   const TodoRow = (aTodo: Todo) => (
     <TableRow key={aTodo.id}>
-      <TableCell>{aTodo.id.slice(0, 4)}</TableCell>
-      <TableCell>{aTodo.title}</TableCell>
+      <TableCell
+        className={checkIsDone(aTodo.is_done as boolean) + " font-bold"}
+      >
+        {aTodo.id.slice(0, 4)}
+      </TableCell>
+      <TableCell
+        className={checkIsDone(aTodo.is_done as boolean) + " font-bold"}
+      >
+        {aTodo.title}
+      </TableCell>
       <TableCell>{aTodo.is_done ? "✅" : "⌛"}</TableCell>
-      <TableCell>{`${aTodo.created_at}`}</TableCell>
+      <TableCell
+        className={checkIsDone(aTodo.is_done as boolean) + " font-bold"}
+      >{`${aTodo.created_at}`}</TableCell>
       <TableCell>
         <div className="relative flex justify-end items-center gap-2">
           <Dropdown className="bg-background border-1 border-default-200">
